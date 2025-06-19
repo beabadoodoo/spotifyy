@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission Accomplished! - Spotify Podcasts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Spotify Official Color Palette */
+        :root {
+            --spotify-green: #1DB954;
+            --spotify-black-text: #191414; /* Dark text for light background */
+            --spotify-grey-dark: #535353;
+            --spotify-grey-light: #707070; /* Slightly darker grey for readability on light */
+            --spotify-white: #FFFFFF;
+            --light-background: #f0f2f5; /* Soft, light background for the body */
+            --glass-background-light: rgba(255, 255, 255, 0.7); /* More transparent white for glass */
+
+            /* Accent Colors for dynamic background & confetti */
+            --dynamic-bg-color-1: rgba(29, 185, 84, 0.2); /* Soft green blob */
+            --dynamic-bg-color-2: rgba(0, 191, 255, 0.2); /* Soft blue blob */
+            --dynamic-bg-color-3: rgba(255, 105, 180, 0.2); /* Soft pink blob */
+            --accent-green-light: #38e078;
+            --accent-blue-soft: #ADD8E6;
+            --accent-pink-soft: #FFC0CB;
+            --accent-purple-soft: #d3b4e0;
+        }
+
+        body {
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Full viewport height */
+            width: 100vw; /* Full viewport width */
+            background-color: var(--light-background); /* Soft, light background */
+            color: var(--spotify-black-text); /* Default dark text color */
+            overflow: hidden; /* Prevent scrollbars due to moving background elements */
+            position: relative;
+            box-sizing: border-box;
+            /* Subtle background pattern for texture */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><defs><pattern id="pg" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M-5 15L15 -5M-5 85L85 -5M15 105L105 15M85 105L105 85" stroke="%23e5e5e5" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23pg)"/></svg>');
+            background-size: 50px 50px;
+        }
+
+        /* Dynamic Background Blobs/Visualizer */
+        .dynamic-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none; /* Allows clicks to pass through */
+        }
+
+        .dynamic-blob {
+            position: absolute;
+            background-color: var(--dynamic-bg-color-1);
+            border-radius: 50%;
+            opacity: 0.8;
+            filter: blur(80px); /* Heavy blur to create soft, glowing shapes */
+            animation: blobMove 20s infinite alternate ease-in-out;
+            will-change: transform; /* Optimize for animation performance */
+        }
+        .dynamic-blob:nth-child(1) {
+            background-color: var(--dynamic-bg-color-1);
+            width: 400px; height: 400px;
+            top: 10%; left: 15%;
+            animation-duration: 25s; animation-delay: 0s;
+        }
+        .dynamic-blob:nth-child(2) {
+            background-color: var(--dynamic-bg-color-2);
+            width: 500px; height: 500px;
+            top: 60%; left: 70%;
+            animation-duration: 20s; animation-delay: 5s;
+        }
+        .dynamic-blob:nth-child(3) {
+            background-color: var(--dynamic-bg-color-3);
+            width: 350px; height: 350px;
+            top: -20%; left: 50%;
+            animation-duration: 30s; animation-delay: 10s;
+        }
+        .dynamic-blob:nth-child(4) {
+            background-color: var(--dynamic-bg-color-1);
+            width: 600px; height: 600px;
+            top: 40%; left: -10%;
+            animation-duration: 22s; animation-delay: 8s;
+        }
+        .dynamic-blob:nth-child(5) {
+            background-color: var(--dynamic-bg-color-2);
+            width: 450px; height: 450px;
+            top: -10%; left: 80%;
+            animation-duration: 28s; animation-delay: 12s;
+        }
+
+        @keyframes blobMove {
+            0% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(20vw, 15vh) scale(1.1); }
+            50% { transform: translate(5vw, -10vh) scale(0.9); }
+            75% { transform: translate(-15vw, 5vh) scale(1.05); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        /* Liquid Glass Main Container for Content */
+        .mission-container {
+            /* Background and blur for the liquid glass effect */
+            background-color: var(--glass-background-light);
+            backdrop-filter: blur(40px) saturate(2.5); /* Even stronger blur and saturation */
+            -webkit-backdrop-filter: blur(40px) saturate(2.5);
+            border-radius: 40px;
+            box-shadow: 0 30px 100px rgba(0, 0, 0, 0.3), /* Deeper shadow for prominent glass */
+                        0 0 50px rgba(29, 185, 84, 0.15); /* Subtle green glow */
+            
+            max-width: 900px; /* Wider for website content */
+            width: 80%; /* Fluid width */
+            min-height: 600px; /* Ensure sufficient height */
+            height: fit-content; /* Adjust height based on content */
+            margin: auto;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+            animation: fadeInPop 1s forwards ease-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Crucial for clipping the glass edges */
+            padding: clamp(50px, 6vw, 80px); /* More generous padding */
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        /* Spotify Logo inside the container */
+        .spotify-logo-in-box {
+            width: clamp(150px, 20vw, 220px); /* Significantly increased size for logo */
+            height: auto;
+            margin-bottom: clamp(30px, 4vw, 50px); /* Space below the logo */
+            opacity: 0;
+            animation: fadeIn 0.8s forwards ease-out 0.2s;
+            position: absolute;
+            top: clamp(40px, 5vw, 60px); /* Pushed further from top edge */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2; /* Ensure logo is above other content in its layer */
+        }
+        .spotify-logo-in-box img {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        h1 {
+            font-size: clamp(3.5em, 8vw, 6em); /* Larger, more dominant title */
+            font-weight: 800;
+            color: var(--spotify-black-text);
+            margin-top: clamp(80px, 10vw, 120px); /* More space from top for logo and title */
+            margin-bottom: clamp(30px, 4vw, 50px);
+            text-shadow: 0 5px 10px rgba(0,0,0,0.15); /* Deeper text shadow */
+            animation: slideInFromTop 1s forwards ease-out 0.4s;
+            opacity: 0;
+            line-height: 1.1;
+        }
+
+        /* Central Blob & Checkmark */
+        .blob-container {
+            position: relative;
+            width: clamp(280px, 45vw, 350px); /* Larger blob */
+            height: clamp(280px, 45vw, 350px);
+            background: radial-gradient(circle at center, rgba(29,185,84, 0.6) 0%, rgba(29,185,84, 0.3) 70%, transparent 100%); /* Stronger internal green */
+            border-radius: 50%;
+            margin-bottom: clamp(40px, 5vw, 60px);
+            animation: blobScaleIn 1s forwards ease-out 0.8s, blobAnimate 12s infinite alternate ease-in-out;
+            opacity: 0;
+            box-shadow: 0 0 80px rgba(29, 185, 84, 0.5), /* Brighter green glow */
+                        inset 0 0 25px rgba(0, 0, 0, 0.08); /* Slightly deeper inner shadow */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .blob-inner {
+            position: relative;
+            width: clamp(180px, 28vw, 220px); /* Larger inner circle */
+            height: clamp(180px, 28vw, 220px);
+            background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(245,245,245,0.9) 100%); /* Solid white with subtle gradient */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 12px 45px rgba(0, 0, 0, 0.25), /* Deeper shadow for inner circle */
+                        0 0 25px rgba(255, 255, 255, 0.6) inset; /* Brighter inner glow */
+            animation: checkmarkPopIn 1s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.2s;
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .checkmark-icon svg {
+            width: clamp(110px, 17vw, 140px); /* Larger checkmark */
+            height: clamp(110px, 17vw, 140px);
+            fill: none;
+            stroke: var(--spotify-green);
+            stroke-width: 8; /* Even thicker stroke for more presence */
+            stroke-dasharray: 200;
+            stroke-dashoffset: 200;
+            animation: checkmarkDraw 1s forwards ease-out 1.8s;
+            filter: drop-shadow(0 0 18px var(--spotify-green)); /* More prominent glow */
+        }
+        .checkmark-icon svg path {
+            animation: checkmarkFill 0.5s forwards ease-out 2.8s;
+        }
+
+        /* Decorative Elements - All lines removed */
+        .blob-decoration {
+            position: absolute;
+            background-color: var(--spotify-grey-light); /* Still grey, but will pop more */
+            border-radius: 50%;
+            opacity: 0;
+            animation: sparklePulse 1.8s infinite alternate ease-in-out, fadeInSmall 0.6s forwards ease-out var(--delay);
+            animation-fill-mode: forwards;
+        }
+        .blob-decoration.dot-1 { --delay: 2.0s; width: 2vw; height: 2vw; max-width: 15px; max-height: 15px; top: 10%; left: 20%; }
+        .blob-decoration.dot-2 { --delay: 2.2s; width: 1.8vw; height: 1.8vw; max-width: 12px; max-height: 12px; top: 25%; right: 15%; }
+        .blob-decoration.dot-3 { --delay: 2.4s; width: 2.5vw; height: 2.5vw; max-width: 18px; max-height: 18px; bottom: 15%; left: 30%; }
+        .blob-decoration.star-1 {
+            --delay: 2.6s; width: 3vw; height: 3vw; max-width: 20px; max-height: 20px; top: 5%; right: 40%;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            background-color: var(--spotify-black-text);
+        }
+        .blob-decoration.star-2 {
+            --delay: 2.8s; width: 2.5vw; height: 2.5vw; max-width: 18px; max-height: 18px; bottom: 20%; right: 20%;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            background-color: var(--spotify-black-text);
+        }
+        /* Dashed line decorative elements are now removed */
+
+        p {
+            font-size: clamp(1.2em, 2vw, 1.5em); /* Larger text for better readability on website */
+            color: var(--spotify-black-text);
+            margin: 25px auto;
+            line-height: 1.7;
+            animation: textFadeIn 0.8s forwards ease-out 3.2s;
+            opacity: 0;
+            max-width: 70%;
+        }
+
+        .reward-info {
+            font-size: clamp(1.1em, 1.7vw, 1.3em); /* Slightly larger reward info */
+            color: var(--spotify-grey-dark);
+            margin: 20px auto 0 auto;
+            line-height: 1.6;
+            animation: textFadeIn 0.8s forwards ease-out 3.5s;
+            opacity: 0;
+            max-width: 70%;
+        }
+
+        .button {
+            width: clamp(300px, 45%, 500px); /* Wider button, more prominent */
+            padding: clamp(20px, 3vw, 28px) 0; /* Larger padding for prominent button */
+            background-color: var(--spotify-green);
+            color: var(--spotify-white);
+            border: none;
+            border-radius: 50px;
+            font-size: clamp(1.3em, 2.2vw, 1.6em); /* Larger button text */
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 15px 40px rgba(29, 185, 84, 0.6); /* More intense green glow */
+            text-decoration: none;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: clamp(60px, 7vw, 90px); /* More space above button */
+            margin-bottom: 0;
+            animation: slideInFromBottom 1s forwards ease-out 3.8s;
+            opacity: 0;
+        }
+
+        .button:hover {
+            background-color: var(--accent-green-light);
+            transform: translateY(-8px); /* More pronounced lift */
+            box-shadow: 0 25px 60px rgba(29, 185, 84, 0.9); /* Even stronger glow on hover */
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInPop {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes slideInFromTop {
+            from { opacity: 0; transform: translateY(-60px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInFromBottom {
+            from { opacity: 0; transform: translateY(60px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes blobScaleIn {
+            0% { opacity: 0; transform: scale(0.7); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes blobAnimate { /* More subtle and contained blob morphing for stability */
+            0%, 100% { border-radius: 50%; transform: scale(1); }
+            25% { border-radius: 55% 45% 65% 35% / 45% 65% 35% 55%; transform: scale(1.02); }
+            50% { border-radius: 45% 55% 35% 65% / 65% 35% 55% 45%; transform: scale(1); }
+            75% { border-radius: 65% 35% 55% 45% / 35% 55% 45% 65%; transform: scale(1.02); }
+        }
+        @keyframes checkmarkPopIn {
+            0% { opacity: 0; transform: scale(0.5); } /* Starts smaller */
+            60% { opacity: 1; transform: scale(1.1); }
+            80% { transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes checkmarkDraw {
+            to { stroke-dashoffset: 0; fill: none; }
+        }
+        @keyframes checkmarkFill {
+            from { fill: none; }
+            to { fill: var(--spotify-green); }
+        }
+        @keyframes sparklePulse {
+            0%, 100% { opacity: 0.8; transform: scale(1); } /* More visible pulse */
+            50% { opacity: 1; transform: scale(1.4); } /* More pronounced scale */
+        }
+        @keyframes fadeInSmall {
+            from { opacity: 0; transform: scale(0.7); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes textFadeIn {
+            from { opacity: 0; transform: translateY(20px); } /* More noticeable text entrance */
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Confetti */
+        .confetti-piece {
+            position: fixed;
+            border-radius: 50%;
+            opacity: 0;
+            animation: fallAndFade 5s ease-out forwards; /* Longer fall duration */
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        @keyframes fallAndFade {
+            0% {
+                transform: translate(var(--x-start), var(--y-start)) scale(0.5) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+                transform: translate(var(--x-start), var(--y-start)) scale(1) rotate(var(--rotate-start));
+            }
+            100% {
+                transform: translate(var(--x-end), var(--y-end)) scale(0.1) rotate(var(--rotate-end));
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dynamic-background">
+        <div class="dynamic-blob"></div>
+        <div class="dynamic-blob"></div>
+        <div class="dynamic-blob"></div>
+        <div class="dynamic-blob"></div>
+        <div class="dynamic-blob"></div>
+    </div>
+
+    <div class="mission-container">
+        <!-- Spotify Logo inside the container -->
+        <div class="spotify-logo-in-box">
+            <img src="5ece4ff9123d6d0004ce5f89.png" alt="Spotify Logo">
+        </div>
+
+        <!-- Main Content Area -->
+        <h1>MISSION ACCOMPLISHED!</h1>
+
+        <!-- Central Blob & Checkmark -->
+        <div class="blob-container">
+            <div class="blob-inner">
+                <div class="checkmark-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                </div>
+            </div>
+            <!-- Decorative elements around the blob (dots and stars only) -->
+            <div class="blob-decoration dot-1"></div>
+            <div class="blob-decoration dot-2"></div>
+            <div class="blob-decoration dot-3"></div>
+            <div class="blob-decoration star-1"></div>
+            <div class="blob-decoration star-2"></div>
+        </div>
+
+        <p>
+            You've successfully completed the "The Deep Dive" mission!
+            <br>Awesome listening and great progress!
+        </p>
+
+        <p class="reward-info">
+            Reward Unlocked: Enjoy 48 hours of uninterrupted, ad-free podcasts!
+            <br>As a bonus, your listening helped plant a tree in the real world! Keep going to grow your forest.
+        </p>
+
+        <!-- Continue Button -->
+        <a href="#" class="button">Claim Reward & Continue Listening</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const numConfetti = 100; // Increased confetti count
+
+            function createConfetti() {
+                const centerX = window.innerWidth / 2;
+                const centerY = window.innerHeight / 2;
+
+                for (let i = 0; i < numConfetti; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.classList.add('confetti-piece');
+                    const size = Math.random() * 16 + 8; // Larger confetti size
+                    confetti.style.width = `${size}px`;
+                    confetti.style.height = `${size}px`;
+
+                    const colors = [
+                        'var(--spotify-green)', 'var(--spotify-white)', 'var(--spotify-grey-light)',
+                        'var(--accent-blue-soft)', 'var(--accent-pink-soft)', 'var(--accent-purple-soft)'
+                    ];
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+                    const startX = centerX + (Math.random() - 0.5) * 300; // Wider start spread
+                    const startY = centerY + (Math.random() - 0.5) * 300;
+
+                    const endX = startX + (Math.random() - 0.5) * window.innerWidth * 1.5; // Even wider fall spread
+                    const endY = window.innerHeight + Math.random() * 400;
+
+                    const rotationStart = Math.random() * 360;
+                    const rotationEnd = rotationStart + (Math.random() - 0.5) * 1800; // More rotations
+
+                    confetti.style.setProperty('--x-start', `${startX}px`);
+                    confetti.style.setProperty('--y-start', `${startY}px`);
+                    confetti.style.setProperty('--x-end', `${endX}px`);
+                    confetti.style.setProperty('--y-end', `${endY}px`);
+                    confetti.style.setProperty('--rotate-start', `${rotationStart}deg`);
+                    confetti.style.setProperty('--rotate-end', `${rotationEnd}deg`);
+                    confetti.style.animationDelay = `${Math.random() * 2.5}s`; // Longer delay range
+                    confetti.style.animationDuration = `${Math.random() * 4 + 5}s`; // Longer duration
+                    confetti.style.left = `${startX}px`;
+                    confetti.style.top = `${startY}px`;
+
+                    document.body.appendChild(confetti);
+                }
+            }
+
+            setTimeout(createConfetti, 2500); // Slightly longer delay for confetti to align with other animations
+        });
+    </script>
+</body>
+</html>
